@@ -140,3 +140,28 @@ Upon following the above instructions, you may follow the below suggested test f
 6. Grant verifier access from the **Holder** tab.
 7. Switch MetaMask to the verifier wallet.
 8. Verify the credential, compare the document hash, or fetch metadata from the **Verifier** tab.
+
+## 7. Smart contracts and frontend button mapping
+The smart contracts, their respective functions, and the relevant buttons found in the frontend application, for this dApp are briefly explained below:
+- `InstitutionRegistry`: manages approved institutions.
+  - **Register Institution** -> `registerInstitution(address institution, string name)`
+  - **Deactivate Institution** -> `deactivateInstitution(address institution)`
+
+- `CredentialRegistry`: stores issued credential records and links to the other contracts.
+  - **Link Registry Contracts** - `setLifecycleContract(address)` and `setVerificationContract(address)`
+  - **Issue Credential** - `issueCredential(address holder, bytes32 studentReference, bytes32 documentHash, string credentialType)`
+  - **My Issued Credentials** - `getMyIssuerCredentials()`
+  - **My Holder Credentials** - `getMyHolderCredentials()`
+
+- `LifecycleAndAccessControl`: handles post-issue credential changes and holder-controlled verifier access.
+  - **Revoke Credential** - `revokeCredential(bytes32 credentialId)`
+  - **Replace Credential** - `replaceCredential(bytes32 oldCredentialId, bytes32 studentReference, bytes32 documentHash, string credentialType)`
+  - **Grant Access** - `grantAccess(bytes32 credentialId, address verifier)`
+  - **Revoke Access** - `revokeAccess(bytes32 credentialId, address verifier)`
+  - **Check Access** - `hasAccess(bytes32 credentialId, address verifier)`
+
+- `VerificationContract`: verifier-facing contract for checking credentials.
+  - **Verify Credential** - `verifyCredential(bytes32 credentialId)`
+  - **Check Status** - `getCredentialStatus(bytes32 credentialId)`
+  - **Compare Hash** - `compareDocumentHash(bytes32 credentialId, bytes32 suppliedDocumentHash)`
+  - **Get Metadata** ->`getCredentialMetadata(bytes32 credentialId)`
