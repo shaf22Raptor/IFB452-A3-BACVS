@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credential Verification dApp</title>
+    <style>
+        :root {
+            --bg: #eef2f5;
+            --surface: #ffffff;
+            --surface-alt: #f7f9fb;
+            --border: #d7dde1;
+            --border-soft: #e6ebee;
+            --text: #1e272e;
+            --muted: #5c6b75;
+            --primary: #2454a6;
+            --primary-hover: #1c4280;
+            --secondary: #51616d;
+            --secondary-hover: #3d4a54;
+            --success: #126b39;
+            --error: #a52626;
+            --pill-on: #e2f0e7;
+            --pill-on-text: #126b39;
+            --pill-off: #f1d6d6;
+            --pill-off-text: #a52626;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.45;
+            padding-bottom: 200px;
+        }
+
+        header.app-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px 24px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header-top h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .header-top .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        .status-bar {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 8px 16px;
+            font-size: 12px;
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 8px 10px;
+            background: var(--surface-alt);
+            border: 1px solid var(--border-soft);
+            border-radius: 6px;
+        }
+
+        .status-item .label {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .status-item .value {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--pill-off);
+            color: var(--pill-off-text);
+        }
+
+        .pill.on {
+            background: var(--pill-on);
+            color: var(--pill-on-text);
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .tab-bar button {
+            flex: 1;
+            min-width: 110px;
+            margin: 0;
+            padding: 10px 12px;
+            background: transparent;
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .tab-bar button:hover {
+            background: var(--surface-alt);
+            color: var(--text);
+        }
+
+        .tab-bar button.active {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        section h2 {
+            margin: 0 0 4px;
+            font-size: 18px;
+        }
+
+        section .section-desc {
+            color: var(--muted);
+            font-size: 13px;
+            margin: 0 0 16px;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .field {
+            margin-top: 14px;
+        }
+
+        .field:first-child {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .hint {
+            display: block;
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        input {
+            width: 100%;
+            margin-top: 6px;
+            padding: 9px 10px;
+            border: 1px solid #b8c2c8;
+            border-radius: 4px;
+            font: inherit;
+            font-size: 14px;
+            background: #ffffff;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(36, 84, 166, 0.15);
+        }
+
+        .button-row {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        button {
+            padding: 9px 14px;
+            border: 0;
+            border-radius: 4px;
+            background: var(--primary);
+            color: #ffffff;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button.secondary {
+            background: var(--secondary);
+        }
+
+        button.secondary:hover {
+            background: var(--secondary-hover);
+        }
+
+        button.small {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .callout {
+            padding: 12px 14px;
+            background: #eef3fb;
+            border-left: 3px solid var(--primary);
+            border-radius: 4px;
+            color: #1f3a6b;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .callout strong {
+            color: #14264a;
+        }
+
+        .copy-row {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid var(--border-soft);
+            border-radius: 6px;
+            background: var(--surface-alt);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .copy-row .copy-row-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-row strong {
+            font-size: 13px;
+        }
+
+        .copy-value {
+            display: block;
+            overflow-wrap: anywhere;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        .copy-row button {
+            margin: 0;
+        }
+
+        #credentialContextPanel {
+            display: none;
+        }
+
+        #credentialContextPanel.active {
+            display: block;
+        }
+
+        .result-dock {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+            z-index: 9;
+        }
+
+        .result-dock-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .result-dock h2 {
+            margin: 0 0 6px;
+            font-size: 13px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 600;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            margin: 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 13px;
+        }
+
+        .success {
+            color: var(--success);
+        }
+
+        .error {
+            color: var(--error);
+        }
+
+        #result:empty::before {
+            content: "No actions yet. Results, transaction hashes, and errors will appear here.";
+            color: var(--muted);
+            font-size: 13px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="header-top">
+                <div>
+                    <h1>Credential Verification dApp</h1>
+                    <div class="subtitle">Issue, manage, and verify academic credentials on-chain.</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <nav class="tab-bar" role="tablist">
+            <button type="button" class="tab-btn active" data-tab-btn="setup" onclick="showTab('setup')">1. Setup</button>
+            <button type="button" class="tab-btn" data-tab-btn="admin" onclick="showTab('admin')">Admin</button>
+            <button type="button" class="tab-btn" data-tab-btn="issuer" onclick="showTab('issuer')">Issuer</button>
+            <button type="button" class="tab-btn" data-tab-btn="holder" onclick="showTab('holder')">Holder</button>
+            <button type="button" class="tab-btn" data-tab-btn="verifier" onclick="showTab('verifier')">Verifier</button>
+        </nav>
+
+        <section id="credentialContextPanel">
+            <h2>Credential Context</h2>
+            <p class="section-desc">Credential IDs are generated when credentials are issued. Copy a generated ID here when you want to manage, share, verify, or inspect an existing credential.</p>
+            <div class="grid-2">
+                <div class="field">
+                    <label for="credentialId">Credential ID (bytes32)</label>
+                    <span class="hint">Generated on issue. Paste one here for revoke, replace, grant access, verify, status, or metadata actions.</span>
+                    <input type="text" id="credentialId" placeholder="0x..." />
+                </div>
+                <div class="field">
+                    <label for="documentHash">Document Hash (bytes32)</label>
+                    <span class="hint">Hash of the credential document. Format: 0x + 64 hex chars.</span>
+                    <input type="text" id="documentHash" placeholder="0x..." />
+                </div>
+            </div>
+        </section>
+
+        <!-- SETUP TAB -->
+        <div class="tab-panel active" data-tab="setup">
+            <section>
+                <h2><span class="step-number">1</span>Connect Wallet</h2>
+                <p class="section-desc">Paste the deployed <code>VerificationContract</code> address from Remix, then connect MetaMask. The contract address shown is the default for this assessment.</p>
+                <div class="field">
+                    <label for="contractAddress">Verification Contract Address</label>
+                    <span class="hint">From Remix after deploying <code>VerificationContract</code>. Make sure MetaMask is on the same network that was used to deploy.</span>
+                    <input type="text" id="contractAddress" placeholder="0x..." />
+                </div>
+                <div class="button-row">
+                    <button type="button" onclick="connectWallet()">Connect Wallet</button>
+                </div>
+            </section>
+
+            <section>
+                <h2><span class="step-number">2</span>Link Registry Contracts</h2>
+                <p class="section-desc">Run this once, right after deployment, while connected as the owner of <code>CredentialRegistry</code>. It points the registry at the lifecycle and verification contracts.</p>
+                <div class="button-row">
+                    <button type="button" class="secondary" onclick="linkContracts()">Link Registry Contracts</button>
+                </div>
+            </section>
+
+            <section>
+                <h2><span class="step-number">3</span>Demo Values (optional)</h2>
+                <p class="section-desc">Paste the test wallet addresses you are using (e.g. from Remix accounts) and the demo credential IDs below. Then use the buttons to prefill the inputs on the other tabs so you don't have to copy-paste while testing.</p>
+                <div class="grid-2">
+                    <div>
+                        <div class="field">
+                            <label for="adminAccount">Admin Account</label>
+                            <span class="hint">Owner wallet that deployed the contracts.</span>
+                            <input type="text" id="adminAccount" placeholder="0x..." />
+                        </div>
+                        <div class="field">
+                            <label for="institutionAccount">Institution Account</label>
+                            <span class="hint">Wallet that will act as a registered issuer.</span>
+                            <input type="text" id="institutionAccount" placeholder="0x..." />
+                        </div>
+                        <div class="field">
+                            <label for="studentAccount">Student Account</label>
+                            <span class="hint">Wallet that will hold the credential.</span>
+                            <input type="text" id="studentAccount" placeholder="0x..." />
+                        </div>
+                        <div class="field">
+                            <label for="verifierAccount">Verifier Account</label>
+                            <span class="hint">Wallet (e.g. employer) that will be granted access.</span>
+                            <input type="text" id="verifierAccount" placeholder="0x..." />
+                        </div>
+                        <div class="button-row">
+                            <button type="button" onclick="applyDemoAddresses()">Fill Address Inputs</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="copy-row">
+                            <strong>Credential ID Format Example</strong>
+                            <span class="copy-value" id="demoCredentialId">0x3333333333333333333333333333333333333333333333333333333333333333</span>
+                            <div class="copy-row-head">
+                                <span class="hint">Credential IDs are generated on issue; use this only as a bytes32 format example.</span>
+                                <button type="button" class="small secondary" onclick="copyDemoValue('demoCredentialId')">Copy</button>
+                            </div>
+                        </div>
+                        <div class="copy-row">
+                            <strong>Document Hash</strong>
+                            <span class="copy-value" id="demoDocumentHash">0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</span>
+                            <div class="copy-row-head">
+                                <span class="hint">Demo hash of the credential document.</span>
+                                <button type="button" class="small secondary" onclick="copyDemoValue('demoDocumentHash')">Copy</button>
+                            </div>
+                        </div>
+                        <div class="copy-row">
+                            <strong>Student Reference</strong>
+                            <span class="copy-value" id="demoStudentReference">0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</span>
+                            <div class="copy-row-head">
+                                <span class="hint">Demo bytes32 reference linking back to the student.</span>
+                                <button type="button" class="small secondary" onclick="copyDemoValue('demoStudentReference')">Copy</button>
+                            </div>
+                        </div>
+                        <div class="button-row">
+                            <button type="button" onclick="applyDemoCredentialValues()">Fill Credential Inputs</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ADMIN TAB -->
+        <div class="tab-panel" data-tab="admin">
+            <div class="callout">
+                <strong>Who uses this tab:</strong> the contract owner (the wallet that deployed <code>InstitutionRegistry</code>). Use it to whitelist or remove issuing institutions.
+            </div>
+
+            <section>
+                <h2>Accreditation Authority</h2>
+                <p class="section-desc">Register a new institution so it is allowed to issue credentials, or deactivate one that should no longer issue.</p>
+                <div class="field">
+                    <label for="institutionAddress">Institution Wallet Address</label>
+                    <span class="hint">The wallet address that will be allowed to issue credentials.</span>
+                    <input type="text" id="institutionAddress" placeholder="0x..." />
+                </div>
+                <div class="field">
+                    <label for="institutionName">Institution Name</label>
+                    <span class="hint">Human-readable name stored on-chain (e.g. "Queensland University of Technology").</span>
+                    <input type="text" id="institutionName" placeholder="Example University" />
+                </div>
+                <div class="button-row">
+                    <button type="button" onclick="registerInstitution()">Register Institution</button>
+                    <button type="button" class="secondary" onclick="deactivateInstitution()">Deactivate Institution</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ISSUER TAB -->
+        <div class="tab-panel" data-tab="issuer">
+            <div class="callout">
+                <strong>Who uses this tab:</strong> a registered institution wallet. You must already be registered on the Admin tab. Issuing creates a Credential ID automatically; use the context panel only for later credential management actions.
+            </div>
+
+            <section>
+                <h2>Issue a Credential</h2>
+                <p class="section-desc">Fill in the student details and document hash, then click Issue Credential. The generated Credential ID will be shown after confirmation.</p>
+                <div class="field">
+                    <label for="holderAddress">Student Holder Address</label>
+                    <span class="hint">Wallet address that will own the credential.</span>
+                    <input type="text" id="holderAddress" placeholder="0x..." />
+                </div>
+                <div class="field">
+                    <label for="studentReference">Student Reference (bytes32)</label>
+                    <span class="hint">Off-chain identifier hashed into bytes32 (e.g. student ID). Format: 0x + 64 hex chars.</span>
+                    <input type="text" id="studentReference" placeholder="0x..." />
+                </div>
+                <div class="field">
+                    <label for="credentialType">Credential Type</label>
+                    <span class="hint">Human-readable credential name, e.g. "Bachelor of Information Technology".</span>
+                    <input type="text" id="credentialType" placeholder="Bachelor of Information Technology" />
+                </div>
+                <div class="button-row">
+                    <button type="button" onclick="issueCredential()">Issue Credential</button>
+                </div>
+            </section>
+
+            <section>
+                <h2>Manage Existing Credentials</h2>
+                <p class="section-desc">Revoke cancels the credential. Replace creates a new active credential using the student reference, document hash, and credential type above, then marks the current Credential ID as superseded.</p>
+                <div class="button-row">
+                    <button type="button" onclick="revokeCredential()">Revoke Credential</button>
+                    <button type="button" onclick="replaceCredential()">Replace Credential</button>
+                    <button type="button" class="secondary" onclick="getMyIssuerCredentials()">My Issued Credentials</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- HOLDER TAB -->
+        <div class="tab-panel" data-tab="holder">
+            <div class="callout">
+                <strong>Who uses this tab:</strong> the student wallet that holds a credential. Use the Credential Context panel above to set which credential you are acting on, then grant or revoke verifier access here.
+            </div>
+
+            <section>
+                <h2>Manage Verifier Access</h2>
+                <p class="section-desc">Decide which verifier wallets are allowed to read your credential.</p>
+                <div class="field">
+                    <label for="verifierAddress">Verifier Address</label>
+                    <span class="hint">Wallet address you are granting or revoking access for (e.g. an employer's wallet).</span>
+                    <input type="text" id="verifierAddress" placeholder="0x..." />
+                </div>
+                <div class="button-row">
+                    <button type="button" onclick="grantAccess()">Grant Access</button>
+                    <button type="button" onclick="revokeAccess()">Revoke Access</button>
+                    <button type="button" class="secondary" onclick="checkAccess()">Check Access</button>
+                </div>
+            </section>
+
+            <section>
+                <h2>My Credentials</h2>
+                <p class="section-desc">List every credential currently held by the connected wallet.</p>
+                <div class="button-row">
+                    <button type="button" class="secondary" onclick="getMyHolderCredentials()">My Holder Credentials</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- VERIFIER TAB -->
+        <div class="tab-panel" data-tab="verifier">
+            <div class="callout">
+                <strong>Who uses this tab:</strong> a verifier wallet (e.g. an employer) that the holder has granted access to. All actions operate on the Credential ID set in the Credential Context panel above.
+            </div>
+
+            <section>
+                <h2>Verify Credential Validity</h2>
+                <p class="section-desc">Confirms the credential exists and is currently active. Every verification is automatically recorded on-chain as an auditable log entry.</p>
+                <div class="button-row">
+                    <button type="button" onclick="verifyCredential()">Verify Credential</button>
+                    <button type="button" class="secondary" onclick="checkCredentialStatus()">Check Status</button>
+                </div>
+            </section>
+
+            <section>
+                <h2>Compare Document Hash</h2>
+                <p class="section-desc">Confirms a document you were given matches the hash stored on-chain. The comparison is always recorded on-chain. Set the Document Hash in the Credential Context panel before running.</p>
+                <div class="button-row">
+                    <button type="button" onclick="compareDocumentHash()">Compare Hash</button>
+                </div>
+            </section>
+
+            <section>
+                <h2>Credential Metadata</h2>
+                <p class="section-desc">Fetch the full on-chain record for the Credential ID set in the Credential Context panel.</p>
+                <div class="button-row">
+                    <button type="button" onclick="getCredentialMetadata()">Get Metadata</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <aside class="result-dock" aria-label="Last action result">
+        <div class="result-dock-inner">
+            <h2>Result</h2>
+            <div id="result"></div>
+        </div>
+    </aside>
+
+    <script>
+        const TABS_WITH_CONTEXT = ["issuer", "holder", "verifier"];
+
+        function showTab(tabId) {
+            document.querySelectorAll(".tab-panel").forEach(function (panel) {
+                panel.classList.toggle("active", panel.dataset.tab === tabId);
+            });
+            document.querySelectorAll(".tab-btn").forEach(function (btn) {
+                btn.classList.toggle("active", btn.dataset.tabBtn === tabId);
+            });
+            const contextPanel = document.getElementById("credentialContextPanel");
+            contextPanel.classList.toggle("active", TABS_WITH_CONTEXT.indexOf(tabId) !== -1);
+        }
+
+        window.addEventListener("DOMContentLoaded", function () {
+            showTab("setup");
+            const accountEl = document.getElementById("account");
+            const pill = document.getElementById("connectionPill");
+            const observer = new MutationObserver(function () {
+                const text = (accountEl.textContent || "").trim();
+                const isConnected = text && text !== "Not connected";
+                pill.textContent = isConnected ? "Connected" : "Not connected";
+                pill.classList.toggle("on", !!isConnected);
+            });
+            observer.observe(accountEl, { childList: true, characterData: true, subtree: true });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="backend_files/app.js"></script>
+</body>
+
+</html>

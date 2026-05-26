@@ -1,0 +1,164 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "credentialId",
+                "type": "bytes32"
+            }
+        ],
+        "name": "verifyCredential",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "credentialId",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "suppliedDocumentHash",
+                "type": "bytes32"
+            }
+        ],
+        "name": "compareDocumentHash",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "credentialId",
+                "type": "bytes32"
+            }
+        ],
+        "name": "getCredentialStatus",
+        "outputs": [
+            {
+                "internalType": "enum CredentialRegistry.CredentialStatus",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "credentialId",
+                "type": "bytes32"
+            }
+        ],
+        "name": "getCredentialMetadata",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "issuer",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "holder",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "studentReference",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "documentHash",
+                        "type": "bytes32"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "credentialType",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "issuedAt",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "enum CredentialRegistry.CredentialStatus",
+                        "name": "status",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "bytes32",
+                        "name": "replacementCredentialId",
+                        "type": "bytes32"
+                    }
+                ],
+                "internalType": "struct CredentialRegistry.Credential",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "credentialRegistry",
+        "inputs": [],
+        "outputs": [
+            {
+                "internalType": "contract CredentialRegistry",
+                "name": "",
+                "type": "address"
+            }
+        ]
+    },
+    {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "institutionRegistry",
+        "inputs": [],
+        "outputs": [
+            {
+                "internalType": "contract InstitutionRegistry",
+                "name": "",
+                "type": "address"
+            }
+        ]
+    },
+    {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "lifecycleAndAccessControl",
+        "inputs": [],
+        "outputs": [
+            {
+                "internalType": "contract LifecycleAndAccessControl",
+                "name": "",
+                "type": "address"
+            }
+        ]
+    }
+]
