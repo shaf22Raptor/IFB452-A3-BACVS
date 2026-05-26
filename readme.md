@@ -1,3 +1,8 @@
+# Team member contributions
+Both team members contributed equally as possible. 
+We each did 2 smart contracts each.
+We contributed equally to frontend development.
+
 # Credential Verification dApp Setup
 
 This project has two parts:
